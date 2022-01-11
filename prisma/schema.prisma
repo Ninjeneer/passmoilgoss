@@ -22,3 +22,24 @@ model User {
 
   @@map("users")
 }
+
+model Orphan {
+  id        String   @id @default(uuid())
+  firstname String
+  lastname  String
+  birthDate DateTime
+  country   String
+  gender    String
+  score     Int
+
+  eyes         String
+  hairs        String
+  weight       Int
+  height       Float
+  beauty       Int
+  intelligence Int
+  sociability  Int
+  calm         Int
+
+  @@map("orphans")
+}
