@@ -1,26 +1,38 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { CreateOrphanDto } from './dto/create-orphan.dto';
-import { Injectable } from '@nestjs/common';
+import OrphanRepository from './orphan.repository';
 import { UpdateOrphanDto } from './dto/update-orphan.dto';
 
 @Injectable()
 export class OrphanService {
-	create(createOrphanDto: CreateOrphanDto) {
-		return 'This action adds a new orphan';
+	constructor(private readonly orphanRepository: OrphanRepository) {}
+
+	async create(createOrphanDto: CreateOrphanDto) {
+		return await this.orphanRepository.create(createOrphanDto);
 	}
 
-	findAll() {
-		return `This action returns all orphan`;
+	async findAll() {
+		return await this.orphanRepository.findAll();
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} orphan`;
+	async findOne(id: string) {
+		return await this.orphanRepository.findOne(id);
 	}
 
-	update(id: number, updateOrphanDto: UpdateOrphanDto) {
-		return `This action updates a #${id} orphan`;
+	async update(id: string, updateOrphanDto: UpdateOrphanDto) {
+		const orphan = await this.orphanRepository.findOne(id);
+		if (!orphan) {
+			throw new NotFoundException();
+		}
+		return await this.orphanRepository.update(id, updateOrphanDto);
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} orphan`;
+	async remove(id: string): Promise<void> {
+		const orphan = await this.orphanRepository.findOne(id);
+		if (!orphan) {
+			throw new NotFoundException();
+		}
+		await this.orphanRepository.remove(id);
 	}
 }
