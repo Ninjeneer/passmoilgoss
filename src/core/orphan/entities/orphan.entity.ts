@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Orphan as PrismaOrphan } from '@prisma/client';
 
 export enum Gender {
 	M = 'm',
 	F = 'f'
 }
 
+export const HairColors = ['Blond', 'Brun', 'Châtain', 'Roux'];
+export const EyesColors = ['Bleu', 'Marron', 'Vert'];
+
 export class Orphan {
+	@ApiProperty()
+	id: string;
+
 	@ApiProperty()
 	firstname: string;
 
@@ -48,4 +55,16 @@ export class Orphan {
 
 	@ApiProperty()
 	calm: number;
+
+	@ApiProperty()
+	hygiene: number;
+
+	public static from(prismaOrphan: PrismaOrphan) {
+		if (!prismaOrphan) {
+			return null;
+		}
+		const orphan = new Orphan();
+		Object.assign(orphan, { ...prismaOrphan });
+		return orphan;
+	}
 }

@@ -30,16 +30,17 @@ model Orphan {
   birthDate DateTime
   country   String
   gender    String
-  score     Int
 
   eyes         String
   hairs        String
   weight       Int
   height       Float
+
   beauty       Int
   intelligence Int
   sociability  Int
   calm         Int
+  hygiene      Int
 
   @@map("orphans")
 }
