@@ -6,8 +6,6 @@ export class CreateOrphanDto {
 	birthDate: Date;
 	country: string;
 	gender: Gender;
-	score: number;
-
 	// Stats
 	eyes: string;
 	hairs: string;
