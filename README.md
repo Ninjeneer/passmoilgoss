@@ -1,13 +1,14 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+  <a href="http://nestjs.com/" target="blank"><img src="doc/logo.png" width="320" alt="Nest Logo" /></a>
 </p>
-<h1 align="center">NestJS Starter-Kit</h1>
+<h1 align="center">Pass Moi L'Goss API server</h1>
 
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository with user management and role based authorizations
+Project realised in the context of a Hackathon organized by the [ENSICAEN](https://www.ensicaen.fr)  & [Le Dôme](http://www.ledome.info/)
 
+Pas Moi L'Goss is a fake marketplace for adoption centers
 ## Installation
 
 ```bash
