@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import OrphanRepository, { FindManyFilters } from './orphan.repository';
 
 import { CreateOrphanDto } from './dto/create-orphan.dto';
-import OrphanRepository from './orphan.repository';
 import { UpdateOrphanDto } from './dto/update-orphan.dto';
 
 @Injectable()
@@ -12,8 +12,8 @@ export class OrphanService {
 		return await this.orphanRepository.create(createOrphanDto);
 	}
 
-	async findAll() {
-		return await this.orphanRepository.findAll();
+	async findAll(filters?: FindManyFilters, sort?: string) {
+		return await this.orphanRepository.findAll(filters, sort);
 	}
 
 	async findOne(id: string) {

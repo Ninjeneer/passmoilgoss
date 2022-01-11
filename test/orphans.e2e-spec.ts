@@ -3,6 +3,8 @@ import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import chai, { expect } from 'chai';
 
 import { AuthApiModule } from '../src/api/auth-api/auth-api.module';
+import { CreateOrphanDto } from '../src/core/orphan/dto/create-orphan.dto';
+import { Gender } from '../src/core/orphan/entities/orphan.entity';
 import HttpClient from './HttpClient';
 import { Orphan } from '@prisma/client';
 import { OrphanApiModule } from '../src/api/orphan-api/orphan-api.module';
@@ -16,11 +18,10 @@ chai.use(chaiSubset);
 
 const createdOrphans: Orphan[] = [];
 
-async function createOrphan(httpClient: HttpClient) {
-	const orphan = OrphanFactory.buildCreateOrphanDto();
-	const response = await httpClient.post('/orphans', orphan);
+async function createOrphan(httpClient: HttpClient, createDto: CreateOrphanDto) {
+	const response = await httpClient.post('/orphans', createDto);
 	expect(response.statusCode).to.be.eq(HttpStatus.CREATED);
-	expect(response.json<Orphan>()).to.containSubset(orphan);
+	expect(response.json<Orphan>()).to.containSubset(createDto);
 	createdOrphans.push(response.json<Orphan>());
 	return response.json<Orphan>();
 }
@@ -46,15 +47,67 @@ describe('OrphanController (e2e)', function () {
 	describe('As basic orphan', () => {
 		it('Should be able to find all (GET /orphans/)', async () => {
 			const httpClient = await getHttpClient(null, app);
-			const orphan = await createOrphan(httpClient);
+			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const response = await httpClient.get(`/orphans`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<Orphan[]>()).to.include.deep.members([orphan]);
 		});
 
+		it('Should be able to filter orphans (GET /orphans/)', async () => {
+			const httpClient = await getHttpClient(null, app);
+			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });
+			const orphan2 = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.F });
+			let response = await httpClient.get(`/orphans`, { gender: 'f' });
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<Orphan[]>()).to.include.deep.members([orphan2]);
+			expect(response.json<Orphan[]>()).to.not.include.deep.members([orphan]);
+
+			const orphan3 = await createOrphan(httpClient, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				gender: Gender.M,
+				eyes: 'Marron'
+			});
+			const orphan4 = await createOrphan(httpClient, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				gender: Gender.F,
+				eyes: 'Vert'
+			});
+			const orphan5 = await createOrphan(httpClient, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				gender: Gender.F,
+				eyes: 'Bleu'
+			});
+			response = await httpClient.get(`/orphans`, { eyes: 'Marron|Vert' });
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<Orphan[]>()).to.include.deep.members([orphan3, orphan4]);
+			expect(response.json<Orphan[]>()).to.not.include.deep.members([orphan5]);
+		});
+
+		it('Should be able to sort orphans (GET /orphans/)', async () => {
+			const httpClient = await getHttpClient(null, app);
+			const orphan = await createOrphan(httpClient, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				gender: Gender.M,
+				firstname: 'Aaa'
+			});
+			const orphan2 = await createOrphan(httpClient, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				gender: Gender.F,
+				lastname: 'Bbb'
+			});
+			let response = await httpClient.get(`/orphans`, { sort: 'firstname' });
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<Orphan[]>()[0]).to.be.deep.eq(orphan);
+			expect(response.json<Orphan[]>()[1]).to.be.deep.eq(orphan2);
+
+			response = await httpClient.get(`/orphans`, { sort: '-firstname' });
+			expect(response.json<Orphan[]>()[0]).to.be.deep.eq(orphan2);
+			expect(response.json<Orphan[]>()[1]).to.be.deep.eq(orphan);
+		});
+
 		it('Should be able to find one (GET /orphans/:id)', async () => {
 			const httpClient = await getHttpClient(null, app);
-			const orphan = await createOrphan(httpClient);
+			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const response = await httpClient.get(`/orphans/${orphan.id}`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<Orphan>()).to.containSubset(orphan);
@@ -64,7 +117,7 @@ describe('OrphanController (e2e)', function () {
 	describe('As admin orphan', () => {
 		it('Should be able to update orphan (PATCH /orphans/:id)', async () => {
 			const httpClient = await getHttpClient(null, app);
-			const orphan = await createOrphan(httpClient);
+			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const newOrphanData = OrphanFactory.buildCreateOrphanDto();
 			const response = await httpClient.patch(`/orphans/${orphan.id}`, newOrphanData);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -73,7 +126,7 @@ describe('OrphanController (e2e)', function () {
 
 		it('Should be able to create a orphan (POST /orphans)', async () => {
 			const httpClient = await getHttpClient(null, app);
-			await createOrphan(httpClient);
+			await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 		});
 
 		it('Should be able to delete a orphan (DELETE /orphans/:id)', async () => {

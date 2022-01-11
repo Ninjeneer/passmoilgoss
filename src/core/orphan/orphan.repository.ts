@@ -1,8 +1,17 @@
+import { Gender, Orphan } from './entities/orphan.entity';
+
 import { CreateOrphanDto } from './dto/create-orphan.dto';
 import { Injectable } from '@nestjs/common';
-import { Orphan } from './entities/orphan.entity';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma.service';
 import { UpdateOrphanDto } from './dto/update-orphan.dto';
+
+export interface FindManyFilters {
+	gender?: Gender;
+	eyes?: string[];
+	hairs?: string[];
+	countries?: string[];
+}
 
 @Injectable()
 export default class OrphanRepository {
@@ -16,8 +25,31 @@ export default class OrphanRepository {
 		);
 	}
 
-	public async findAll(): Promise<Orphan[]> {
-		return (await this.prisma.orphan.findMany()).map((o) => Orphan.from(o));
+	public async findAll(filters?: FindManyFilters, sort?: string): Promise<Orphan[]> {
+		const request: Prisma.OrphanFindManyArgs = {};
+		if (filters) {
+			request.where = { AND: [] };
+			if (filters.gender) {
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ gender: filters.gender });
+			}
+			if (filters.countries) {
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ country: { in: filters.countries } });
+			}
+			if (filters.eyes) {
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ eyes: { in: filters.eyes } });
+			}
+			if (filters.hairs) {
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ hairs: { in: filters.hairs } });
+			}
+			this.removeUselessFilters(request.where);
+		}
+		if (sort) {
+			const order = sort.charAt(0) === '-' ? 'desc' : 'asc';
+			request.orderBy = {
+				[sort.startsWith('-') ? sort.substring(1) : sort]: order
+			};
+		}
+		return (await this.prisma.orphan.findMany(request)).map((o) => Orphan.from(o));
 	}
 
 	public async findOne(id): Promise<Orphan> {
@@ -30,5 +62,11 @@ export default class OrphanRepository {
 
 	public async remove(id: string): Promise<void> {
 		await this.prisma.orphan.delete({ where: { id } });
+	}
+
+	private removeUselessFilters(where): void {
+		if (where.AND && where.AND.length === 0) {
+			delete where.AND;
+		}
 	}
 }
