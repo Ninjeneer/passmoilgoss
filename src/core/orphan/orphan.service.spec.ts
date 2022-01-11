@@ -45,7 +45,7 @@ describe('OrphanService', () => {
 				await orphanService.remove(orphan.id);
 			} catch (e) {}
 		}
-		//await module.get(PrismaService).$disconnect();
+		await module.get(PrismaService).$disconnect();
 		await module.close();
 	});
 	it('should be defined', () => {

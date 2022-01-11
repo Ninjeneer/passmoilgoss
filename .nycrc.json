@@ -1,5 +1,5 @@
 {
-	"include": ["src/**/*.service.ts"],
+	"include": ["src/**/*.service.ts", "src/**/*.controller.ts"],
   "branches": 100,
   "functions": 100,
   "lines": 100,
