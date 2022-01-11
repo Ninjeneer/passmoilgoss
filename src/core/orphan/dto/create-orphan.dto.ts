@@ -1,11 +1,9 @@
-import { Gender } from '../entities/orphan.entity';
-
 export class CreateOrphanDto {
 	firstname: string;
 	lastname: string;
-	birthDate: Date;
+	birthDate: string;
 	country: string;
-	gender: Gender;
+	gender: string;
 	// Stats
 	eyes: string;
 	hairs: string;

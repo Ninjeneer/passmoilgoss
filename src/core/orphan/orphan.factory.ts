@@ -1,6 +1,8 @@
 import { EyesColors, HairColors, Orphan } from './entities/orphan.entity';
 import { address, datatype, date, name } from 'faker';
 
+import { CreateOrphanDto } from './dto/create-orphan.dto';
+
 export default class OrphanFactory {
 	public static buildOne(): Orphan {
 		return {
@@ -28,5 +30,10 @@ export default class OrphanFactory {
 			res.push(OrphanFactory.buildOne());
 		}
 		return res;
+	}
+
+	public static buildCreateOrphanDto(): CreateOrphanDto {
+		const orphan = OrphanFactory.buildOne();
+		return { ...orphan, birthDate: orphan.birthDate.toISOString() };
 	}
 }

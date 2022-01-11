@@ -81,6 +81,6 @@ export default class HttpClient {
 	}
 
 	public async logAsUser(user: User) {
-		return this.logAs(user.email, user.password);
+		return this.logAs(user?.email, user?.password);
 	}
 }

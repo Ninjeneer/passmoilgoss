@@ -5,12 +5,13 @@ import chai, { expect } from 'chai';
 
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
+import { PrismaService } from '../../prisma.service';
 import { SecurityModule } from '../security/security.module';
 import UserFactory from '../user/user.factory';
 import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
-import chaiSubset from 'chai-subset';
 import chaiExclude from 'chai-exclude';
+import chaiSubset from 'chai-subset';
 
 chai.use(chaiSubset);
 chai.use(chaiExclude);
@@ -32,7 +33,7 @@ describe('AuthService', function () {
 	});
 
 	afterEach(async () => {
-		//await module.get(PrismaService).$disconnect();
+		await module.get(PrismaService).$disconnect();
 		await module.close();
 	});
 
@@ -53,6 +54,8 @@ describe('AuthService', function () {
 				.excluding('updatedAt')
 				.containSubset(createdUser)
 				.excluding('updatedAt');
+
+			await userService.remove(createdUser.id);
 		});
 	});
 

@@ -22,18 +22,19 @@ import {
 	ApiOperation,
 	ApiTags
 } from '@nestjs/swagger';
-import { TokenGuard } from '../../core/guards/token.guard';
+// import { TokenGuard } from '../../core/guards/token.guard';
 import { RoleGuard } from '../../core/guards/role.guard';
 import { CreateOrphanDto } from '../../core/orphan/dto/create-orphan.dto';
 import { Orphan } from '../../core/orphan/entities/orphan.entity';
 import { UpdateOrphanDto } from '../../core/orphan/dto/update-orphan.dto';
+import { Request } from 'express';
 
 @Controller('orphans')
 @ApiTags('Orphans')
-@UseGuards(TokenGuard, RoleGuard)
+@UseGuards(RoleGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class OrphanController {
-	constructor(private readonly oprhanService: OrphanService) {}
+	constructor(private readonly orphanService: OrphanService) {}
 
 	@Post()
 	@ApiBody({ type: CreateOrphanDto })
@@ -41,14 +42,14 @@ export class OrphanController {
 	@ApiCreatedResponse({ description: 'Orphan created successfully', type: Orphan })
 	@ApiConflictResponse({ description: 'Orphan already exists' })
 	create(@Req() request: Request, @Body() createOrphanDto: CreateOrphanDto): Promise<Orphan> {
-		return this.oprhanService.create(createOrphanDto);
+		return this.orphanService.create(createOrphanDto);
 	}
 
 	@Get()
 	@ApiOperation({ summary: 'Retrieve all orphan' })
 	@ApiOkResponse({ description: 'Successfully retrieved orphan list', type: [Orphan] })
 	async findAll() {
-		return await this.oprhanService.findAll();
+		return await this.orphanService.findAll();
 	}
 
 	@Get(':id')
@@ -56,7 +57,7 @@ export class OrphanController {
 	@ApiOkResponse({ description: 'Successfully retrieved orphan', type: Orphan })
 	@ApiNotFoundResponse({ description: 'Orphan does not exists' })
 	async findOne(@Param('id') id: string): Promise<Orphan> {
-		const orphan = await this.oprhanService.findOne(id);
+		const orphan = await this.orphanService.findOne(id);
 		if (!orphan) {
 			throw new NotFoundException();
 		}
@@ -73,7 +74,7 @@ export class OrphanController {
 		@Param('id') id: string,
 		@Body() updateOrphanDto: UpdateOrphanDto
 	): Promise<Orphan> {
-		return await this.oprhanService.update(id, updateOrphanDto);
+		return await this.orphanService.update(id, updateOrphanDto);
 	}
 
 	@Delete(':id')
@@ -81,6 +82,6 @@ export class OrphanController {
 	@ApiOkResponse({ description: 'Successfully deleted orphan', type: Orphan })
 	@ApiNotFoundResponse({ description: 'Orphan does not exists' })
 	async remove(@Param('id') id: string): Promise<void> {
-		return await this.oprhanService.remove(id);
+		return await this.orphanService.remove(id);
 	}
 }

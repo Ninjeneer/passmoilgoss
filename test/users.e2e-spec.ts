@@ -1,18 +1,17 @@
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import TestUtils, { getHttpClient } from './utils';
 import chai, { expect } from 'chai';
 
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
-import { User } from '@prisma/client';
-import UserFactory from '../src/core/user/user.factory';
-import { UserService } from '../src/core/user/user.service';
-import chaiSubset from 'chai-subset';
+import { AuthApiModule } from '../src/api/auth-api/auth-api.module';
 import { AuthModule } from '../src/core/auth/auth.module';
 import { Test } from '@nestjs/testing';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import TestUtils, { getHttpClient } from './utils';
-import { UserRole } from '../src/core/user/entities/user.entity';
+import { User } from '@prisma/client';
 import { UserApiModule } from '../src/api/user-api/user-api.module';
-import { AuthApiModule } from '../src/api/auth-api/auth-api.module';
+import UserFactory from '../src/core/user/user.factory';
 import { UserModule } from '../src/core/user/user.module';
+import { UserService } from '../src/core/user/user.service';
+import chaiSubset from 'chai-subset';
 
 chai.use(chaiSubset);
 
@@ -39,18 +38,6 @@ describe('UserController (e2e)', function () {
 	});
 
 	describe('As basic user', () => {
-		it('Should not be able to retrieve user list without being logged (GET /users)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const response = await httpClient.withoutToken().get('/users');
-			expect(response.statusCode).to.be.eq(HttpStatus.UNAUTHORIZED);
-		});
-
-		it('Should not be able to retrieve user list (GET /users)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const response = await httpClient.get('/users');
-			expect(response.statusCode).to.be.eq(HttpStatus.FORBIDDEN);
-		});
-
 		it('Should be able to find himself (GET /users/:id)', async () => {
 			const httpClient = await getHttpClient(users.basic, app);
 			const response = await httpClient.get(`/users/${httpClient.user.id}`);
@@ -65,43 +52,6 @@ describe('UserController (e2e)', function () {
 			const response = await httpClient.patch(`/users/${httpClient.getUser().id}`, newUserData);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<User>().email).to.be.eq(newUserData.email);
-		});
-
-		it('Should not be able to update himself his role (UPDATE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const newUserData = UserFactory.buildOne();
-			delete newUserData.password;
-			newUserData.role = UserRole.ADMIN;
-			const response = await httpClient.patch(`/users/${httpClient.getUser().id}`, newUserData);
-			expect(response.statusCode).to.be.eq(HttpStatus.FORBIDDEN);
-		});
-
-		it('Should not be able to update himself with an invalid email (UPDATE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const newUserData = { email: 'invalid_email' };
-			const response = await httpClient.patch(`/users/${httpClient.getUser().id}`, newUserData);
-			expect(response.statusCode).to.be.eq(HttpStatus.BAD_REQUEST);
-		});
-
-		it('Should not be able to update another user (UPDATE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const newUserData = UserFactory.buildOne();
-			const response = await httpClient.patch(`/users/another_id`, newUserData);
-			expect(response.statusCode).to.be.eq(HttpStatus.FORBIDDEN);
-		});
-
-		it('Should not be able to delete another user (DELETE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const newUserData = UserFactory.buildOne();
-			const response = await httpClient.delete(`/users/another_id`, newUserData);
-			expect(response.statusCode).to.be.eq(HttpStatus.FORBIDDEN);
-		});
-
-		it('Should not be able to create a user (POST /users)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const user = UserFactory.buildOne();
-			const response = await httpClient.post('/users', user);
-			expect(response.statusCode).to.be.eq(HttpStatus.FORBIDDEN);
 		});
 	});
 
