@@ -25,6 +25,10 @@ Feel free to edit settings to match your environment requirements
 
 ### Database
 
+- Create a user named pmg with password pmg
+- Allow it to login if necessary
+- Create a database named 'passmoilgoss' and give all permissions to user pmg on it
+
 Copy the `prisma/.env.template` file as `prisma/.env`
 ```bash
 $ cp prisma/.env.template prisma/.env
