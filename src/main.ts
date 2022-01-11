@@ -12,6 +12,17 @@ async function bootstrap() {
 	await app.register(fastifyHelmet);
 	app.useGlobalPipes(new ValidationPipe());
 
+	await app.register(fastifyHelmet, {
+		contentSecurityPolicy: {
+			directives: {
+				defaultSrc: [`'self'`],
+				styleSrc: [`'self'`, `'unsafe-inline'`],
+				imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+				scriptSrc: [`'self'`, `https: 'unsafe-inline'`]
+			}
+		}
+	});
+
 	const swaggerDoc = new SwaggerDocumentation(app);
 	swaggerDoc.serve();
 

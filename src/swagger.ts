@@ -12,13 +12,13 @@ export default class SwaggerDocumentation {
 	public serve(): void {
 		// Configure swagger
 		const swaggerConfig = new DocumentBuilder()
-			.setTitle('NestJS starter-kit')
-			.setDescription('NestJS web-server starter kit API, including User management and Role based authorizations')
+			.setTitle("Pass Moi L'Goss API")
 			.setContact('Loan Alouache', '', 'alouache.loan@gmail.com')
 			.setVersion('1.0')
 			.addTag('Users')
 			.addTag('Authentication')
-			.addBearerAuth()
+			.addTag('Orphans')
+			// .addBearerAuth()
 			.build();
 
 		const swaggerDocument = SwaggerModule.createDocument(this.app, swaggerConfig);

@@ -10,7 +10,7 @@ export const HairColors = ['Blond', 'Brun', 'Châtain', 'Roux'];
 export const EyesColors = ['Bleu', 'Marron', 'Vert'];
 
 export class Orphan {
-	@ApiProperty()
+	@ApiProperty({ readOnly: true })
 	id: string;
 
 	@ApiProperty()
@@ -28,7 +28,7 @@ export class Orphan {
 	@ApiProperty({ enum: Gender })
 	gender: Gender;
 
-	@ApiProperty()
+	@ApiProperty({ readOnly: true })
 	score: number;
 
 	// Stats
