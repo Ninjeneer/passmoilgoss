@@ -32,11 +32,11 @@ jobs:
       uses: Harmon758/postgresql-action@v1.0.0
       with:
         # POSTGRES_DB - name for the default database that is created
-        postgresql db: neststarter
+        postgresql db: passmoilgoss
         # POSTGRES_USER - create the specified user with superuser power
-        postgresql user: nest
+        postgresql user: pmg
         # POSTGRES_PASSWORD - superuser password
-        postgresql password: password
+        postgresql password: pmg
     
     # Copy the config file
     - name: Copy config file
