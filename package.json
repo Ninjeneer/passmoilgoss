@@ -16,7 +16,7 @@
     "mocha": "mocha -r ts-node/register --reporter mochawesome --reporter-options json=false --exit",
     "mocha:e2e": "mocha -r ts-node/register test/**/*spec.ts --reporter mochawesome --reporter-options json=false --exit",
     "mocha:cov": "nyc --reporter=text mocha",
-    "test:context": "ts-node test/context.ts --exit"
+    "context": "ts-node test/createContext.ts --exit"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

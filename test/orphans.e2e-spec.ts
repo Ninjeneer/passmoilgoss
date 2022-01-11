@@ -97,12 +97,12 @@ describe('OrphanController (e2e)', function () {
 			});
 			let response = await httpClient.get(`/orphans`, { sort: 'firstname' });
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
-			expect(response.json<Orphan[]>()[0]).to.be.deep.eq(orphan);
-			expect(response.json<Orphan[]>()[1]).to.be.deep.eq(orphan2);
+			let orphans = response.json<Orphan[]>();
+			expect(orphans.map((o) => o.id).indexOf(orphan.id)).to.be.lt(orphans.map((o) => o.id).indexOf(orphan2.id));
 
 			response = await httpClient.get(`/orphans`, { sort: '-firstname' });
-			expect(response.json<Orphan[]>()[0]).to.be.deep.eq(orphan2);
-			expect(response.json<Orphan[]>()[1]).to.be.deep.eq(orphan);
+			orphans = response.json<Orphan[]>();
+			expect(orphans.map((o) => o.id).indexOf(orphan.id)).to.be.gt(orphans.map((o) => o.id).indexOf(orphan2.id));
 		});
 
 		it('Should be able to find one (GET /orphans/:id)', async () => {

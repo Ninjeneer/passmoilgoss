@@ -150,12 +150,10 @@ describe('OrphanService', () => {
 			});
 
 			let orphans = await orphanService.findAll(null, 'firstname');
-			expect(orphans[0]).to.deep.eq(o1);
-			expect(orphans[1]).to.deep.eq(o2);
+			expect(orphans.map((o) => o.id).indexOf(o1.id)).to.be.lt(orphans.map((o) => o.id).indexOf(o2.id));
 
 			orphans = await orphanService.findAll(null, '-firstname');
-			expect(orphans[0]).to.deep.eq(o2);
-			expect(orphans[1]).to.deep.eq(o1);
+			expect(orphans.map((o) => o.id).indexOf(o1.id)).to.be.gt(orphans.map((o) => o.id).indexOf(o2.id));
 		});
 	});
 

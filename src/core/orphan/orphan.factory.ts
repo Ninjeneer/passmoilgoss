@@ -36,4 +36,12 @@ export default class OrphanFactory {
 		const orphan = OrphanFactory.buildOne();
 		return { ...orphan, birthDate: orphan.birthDate.toISOString() };
 	}
+
+	public static buildManyCreateOrphanDto(n: number): CreateOrphanDto[] {
+		const res = [];
+		for (let i = 0; i < n; i++) {
+			res.push(OrphanFactory.buildCreateOrphanDto());
+		}
+		return res;
+	}
 }
