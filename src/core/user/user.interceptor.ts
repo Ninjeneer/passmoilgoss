@@ -17,10 +17,10 @@ export class UserInterceptor implements NestInterceptor {
 			// Extract token
 			const token = authorization.replace(new RegExp(/Bearer /i), '').trim();
 			// Retrieve user based on provided token
-			const user = await this.userService.findOneByToken(token);
-			if (user) {
-				request.user = user;
-			}
+			// const user = await this.userService.findOneByToken(token);
+			// if (user) {
+			// 	request.user = user;
+			// }
 		}
 		return next.handle();
 	}

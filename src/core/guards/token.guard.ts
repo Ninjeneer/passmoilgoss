@@ -20,14 +20,14 @@ export class TokenGuard implements CanActivate {
 			// Extract token
 			const token = authorization.replace(new RegExp(/Bearer /i), '').trim();
 			// Retrieve user based on provided token
-			const user = await this.userService.findOneByToken(token);
-			if (!user) {
-				throw new UnauthorizedException();
-			} else {
-				Object.assign(request, { user });
-				Object.assign(request, { token });
-				return true;
-			}
+			// const user = await this.userService.findOneByToken(token);
+			// if (!user) {
+			// 	throw new UnauthorizedException();
+			// } else {
+			// 	Object.assign(request, { user });
+			// 	Object.assign(request, { token });
+			return true;
+			// }
 		} else {
 			throw new UnauthorizedException();
 		}

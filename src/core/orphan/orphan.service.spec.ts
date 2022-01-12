@@ -25,7 +25,8 @@ async function createOrphan(orphanService: OrphanService, createDto: CreateOrpha
 	return createdOrphan;
 }
 
-describe('OrphanService', () => {
+describe('OrphanService', function () {
+	this.timeout(100000);
 	let orphanService: OrphanService;
 	let module: TestingModule;
 
@@ -52,40 +53,46 @@ describe('OrphanService', () => {
 
 	describe('findAll', () => {
 		it('Should return an array of orphans', async () => {
-			const o1 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
-			const o2 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const o1 = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
+			const o2 = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
 			const orphans = await orphanService.findAll();
 			expect(orphans).to.include.deep.members([o1, o2]);
 		});
 
 		it('Should return an array of countries', async () => {
-			const o1 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
-			const o2 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const o1 = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
+			const o2 = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
 			const countries = await orphanService.findAvailableCountries();
 			expect(countries).to.include.members([o1.country, o2.country]);
 		});
 
 		it('Should filter orphans', async () => {
 			// Filter on gender
-			const o1 = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });
-			const o2 = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.F });
+			const o1 = await createOrphan(orphanService, {
+				...(await OrphanFactory.buildCreateOrphanDto()),
+				gender: Gender.M
+			});
+			const o2 = await createOrphan(orphanService, {
+				...(await OrphanFactory.buildCreateOrphanDto()),
+				gender: Gender.F
+			});
 			let orphans = await orphanService.findAll({ gender: Gender.M });
 			expect(orphans).to.include.deep.members([o1]);
 			expect(orphans).to.not.include.deep.members([o2]);
 
 			// Filter on eyes
 			const o3 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron'
 			});
 			const o4 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.F,
 				eyes: 'Marron'
 			});
 			const o5 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Bleu'
 			});
@@ -95,13 +102,13 @@ describe('OrphanService', () => {
 
 			// Filter on country
 			const o6 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron',
 				country: 'France'
 			});
 			const o7 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron',
 				country: 'China'
@@ -112,21 +119,21 @@ describe('OrphanService', () => {
 
 			// Filter on hairs
 			const o8 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron',
 				country: 'France',
 				hairs: 'Brun'
 			});
 			const o9 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron',
 				country: 'France',
 				hairs: 'Brun'
 			});
 			const o10 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				eyes: 'Marron',
 				country: 'France',
@@ -138,11 +145,11 @@ describe('OrphanService', () => {
 
 			// Filter on firstname
 			const o11 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				firstname: 'aaaaaa'
 			});
 			const o12 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				firstname: 'bbbbbb'
 			});
 			orphans = await orphanService.findAll({ firstname: 'aaa' });
@@ -157,12 +164,12 @@ describe('OrphanService', () => {
 
 		it('Should sort orphans', async () => {
 			const o1 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.M,
 				firstname: 'Aaa'
 			});
 			const o2 = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				gender: Gender.F,
 				firstname: 'Bbb'
 			});
@@ -176,7 +183,7 @@ describe('OrphanService', () => {
 
 		it('Should calculate orphan score', async () => {
 			let orphan = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				beauty: 10,
 				hygiene: 10,
 				intelligence: 10,
@@ -186,7 +193,7 @@ describe('OrphanService', () => {
 			expect(orphan.score).to.be.eq(10);
 
 			orphan = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				beauty: 20,
 				hygiene: 20,
 				intelligence: 10,
@@ -196,7 +203,7 @@ describe('OrphanService', () => {
 			expect(orphan.score).to.be.eq(10);
 
 			orphan = await createOrphan(orphanService, {
-				...OrphanFactory.buildCreateOrphanDto(),
+				...(await OrphanFactory.buildCreateOrphanDto()),
 				beauty: 17,
 				hygiene: 19,
 				intelligence: 11,
@@ -209,13 +216,13 @@ describe('OrphanService', () => {
 
 	describe('create', () => {
 		it('Should create a orphan', async () => {
-			await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
 		});
 	});
 
 	describe('find', () => {
 		it('Should find the created orphan', async () => {
-			const orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const orphan = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
 			expect(await orphanService.findOne(orphan.id)).containSubset(orphan);
 		});
 
@@ -226,39 +233,39 @@ describe('OrphanService', () => {
 
 	describe('update', () => {
 		it('Should update the created orphan', async () => {
-			const orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
-			const newOrphanData = OrphanFactory.buildCreateOrphanDto();
+			const orphan = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
+			const newOrphanData = await OrphanFactory.buildCreateOrphanDto();
 			const updatedOrphan = await orphanService.update(orphan.id, newOrphanData);
 			expect(orphan.id).to.be.eq(updatedOrphan.id);
 			expect(updatedOrphan).containSubset({ ...newOrphanData, birthDate: new Date(newOrphanData.birthDate) });
 		});
 
 		it('Should not update an invalid orphan', async () => {
-			await expect(orphanService.update('invalid_orphan', OrphanFactory.buildCreateOrphanDto())).to.be.rejectedWith(
-				NotFoundException
-			);
+			await expect(
+				orphanService.update('invalid_orphan', await OrphanFactory.buildCreateOrphanDto())
+			).to.be.rejectedWith(NotFoundException);
 		});
 
 		it('Should upvote an orphan', async () => {
-			let orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 15 });
+			let orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 15 });
 			const oldCalmScore = orphan.calm;
 			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
 			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
 
 			// Should cap to 20
-			orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 20 });
+			orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 20 });
 			votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
 			expect(votedOrphan.calm).to.be.eq(20);
 		});
 
 		it('Should downvote an orphan', async () => {
-			let orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 15 });
+			let orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 15 });
 			const oldCalmScore = orphan.calm;
 			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
 			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
 
 			// Should cap to 0
-			orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 0 });
+			orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 0 });
 			votedOrphan = await orphanService.vote(orphan.id, 'calm', -1);
 			expect(votedOrphan.calm).to.be.eq(0);
 		});
@@ -266,7 +273,7 @@ describe('OrphanService', () => {
 
 	describe('remove', () => {
 		it('Should delete the created orphan', async () => {
-			const orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const orphan = await createOrphan(orphanService, await OrphanFactory.buildCreateOrphanDto());
 			await orphanService.remove(orphan.id);
 			expect(await orphanService.findOne(orphan.id)).to.be.null;
 		});
