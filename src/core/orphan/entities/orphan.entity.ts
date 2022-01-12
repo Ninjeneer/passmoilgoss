@@ -31,6 +31,9 @@ export class Orphan {
 	@ApiProperty({ readOnly: true })
 	score: number;
 
+	@ApiProperty()
+	picture: string;
+
 	// Stats
 	@ApiProperty()
 	eyes: string;

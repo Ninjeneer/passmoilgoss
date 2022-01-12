@@ -15,8 +15,11 @@ export class CreateOrphanDto {
 
 	@ApiProperty()
 	gender: string;
-	// Stats
 
+	@ApiProperty()
+	picture: string;
+
+	// Stats
 	@ApiProperty()
 	eyes: string;
 

@@ -1,5 +1,5 @@
 import { EyesColors, HairColors, Orphan } from './entities/orphan.entity';
-import { address, datatype, date, name } from 'faker';
+import { address, datatype, date, name, random } from 'faker';
 
 import { CreateOrphanDto } from './dto/create-orphan.dto';
 
@@ -15,6 +15,7 @@ export default class OrphanFactory {
 			hairs: HairColors[Math.floor(Math.random() * HairColors.length)],
 			eyes: EyesColors[Math.floor(Math.random() * EyesColors.length)],
 			country: address.country(),
+			picture: `https://avatars.dicebear.com/api/avataaars/${random.alphaNumeric(30)}.svg`,
 
 			beauty: datatype.number({ min: 0, max: 20 }),
 			intelligence: datatype.number({ min: 0, max: 20 }),
