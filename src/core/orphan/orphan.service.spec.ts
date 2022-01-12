@@ -222,7 +222,7 @@ describe('OrphanService', () => {
 		});
 
 		it('Should upvote an orphan', async () => {
-			let orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			let orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 15 });
 			const oldCalmScore = orphan.calm;
 			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
 			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
@@ -234,7 +234,7 @@ describe('OrphanService', () => {
 		});
 
 		it('Should downvote an orphan', async () => {
-			let orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			let orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 15 });
 			const oldCalmScore = orphan.calm;
 			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
 			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);

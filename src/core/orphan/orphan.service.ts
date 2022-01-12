@@ -44,7 +44,7 @@ export class OrphanService {
 		}
 		const nextScore = orphan[stat] + value * 0.15;
 		if (nextScore >= 0 && nextScore <= 20) {
-			orphan[stat] += value * 0.15;
+			orphan[stat] = nextScore;
 			await this.update(id, { ...orphan, birthDate: orphan.birthDate.toISOString() });
 		}
 		return orphan;
