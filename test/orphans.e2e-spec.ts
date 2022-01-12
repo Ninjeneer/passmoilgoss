@@ -145,6 +145,22 @@ describe('OrphanController (e2e)', function () {
 			expect(response.statusCode).to.be.eq(HttpStatus.NOT_FOUND);
 			createdOrphans.pop();
 		});
+
+		it('Should be able to upvote orphan (PATCH /orphans/:id/:stat/upvote)', async () => {
+			const httpClient = await getHttpClient(null, app);
+			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), calm: 10 });
+			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/upvote`);
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm + 0.15);
+		});
+
+		it('Should be able to downvote orphan (PATCH /orphans/:id/:stat/upvote)', async () => {
+			const httpClient = await getHttpClient(null, app);
+			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), calm: 10 });
+			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/downvote`);
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm - 0.15);
+		});
 	});
 
 	this.afterEach(async () => {

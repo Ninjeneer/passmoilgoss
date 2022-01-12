@@ -88,4 +88,20 @@ export class OrphanController {
 	async remove(@Param('id') id: string): Promise<void> {
 		return await this.orphanService.remove(id);
 	}
+
+	@Patch(':id/:stat/upvote')
+	@ApiOperation({ summary: 'Upvote an orphan' })
+	@ApiOkResponse({ description: 'Successfully upvoted orphan', type: Orphan })
+	@ApiNotFoundResponse({ description: 'Orphan does not exists' })
+	async upvote(@Param('id') id: string, @Param('stat') stat: string): Promise<Orphan> {
+		return await this.orphanService.vote(id, stat, 1);
+	}
+
+	@Patch(':id/:stat/downvote')
+	@ApiOperation({ summary: 'Downvote an orphan' })
+	@ApiOkResponse({ description: 'Successfully downvoted orphan', type: Orphan })
+	@ApiNotFoundResponse({ description: 'Orphan does not exists' })
+	async downvote(@Param('id') id: string, @Param('stat') stat: string): Promise<Orphan> {
+		return await this.orphanService.vote(id, stat, -1);
+	}
 }
