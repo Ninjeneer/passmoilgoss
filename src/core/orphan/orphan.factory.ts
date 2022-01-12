@@ -1,4 +1,4 @@
-import { EyesColors, HairColors, Orphan } from './entities/orphan.entity';
+import { EyesColors, Gender, HairColors, Orphan } from './entities/orphan.entity';
 import { address, datatype, date, name, random } from 'faker';
 
 import { CreateOrphanDto } from './dto/create-orphan.dto';
@@ -11,7 +11,7 @@ export default class OrphanFactory {
 			birthDate: date.past(8),
 			height: datatype.number({ min: 90, max: 155 }),
 			weight: datatype.number({ min: 20, max: 60 }),
-			gender: ['m', 'f'][Math.round(Math.random())],
+			gender: [Gender.M, Gender.F][Math.round(Math.random())],
 			hairs: HairColors[Math.floor(Math.random() * HairColors.length)],
 			eyes: EyesColors[Math.floor(Math.random() * EyesColors.length)],
 			country: address.country(),
