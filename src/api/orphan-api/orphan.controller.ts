@@ -59,7 +59,7 @@ export class OrphanController {
 				hairs: hairs?.split('|'),
 				firstname
 			},
-			sort
+			sort && sort !== 'none' ? sort : undefined
 		);
 	}
 

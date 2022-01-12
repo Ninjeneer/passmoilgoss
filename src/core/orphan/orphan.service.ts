@@ -14,7 +14,22 @@ export class OrphanService {
 	}
 
 	async findAll(filters?: FindManyFilters, sort?: string): Promise<Orphan[]> {
-		return await this.orphanRepository.findAll(filters, sort);
+		let order = 1;
+		let oldSort;
+		if (sort?.includes('age') || sort?.includes('score')) {
+			if (sort.includes('-')) {
+				order = -1;
+			}
+			oldSort = sort;
+			sort = undefined;
+		}
+		let orphans = await this.orphanRepository.findAll(filters, sort);
+		if (oldSort?.includes('age')) {
+			orphans = orphans.sort((a, b) => (order === 1 ? a.age - b.age : b.age - a.age));
+		} else if (oldSort?.includes('score')) {
+			orphans = orphans.sort((a, b) => (order === 1 ? a.score - b.score : b.age - a.score));
+		}
+		return orphans;
 	}
 
 	async findOne(id: string): Promise<Orphan> {
