@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import { Orphan as PrismaOrphan } from '@prisma/client';
 
 export enum Gender {
@@ -29,7 +30,10 @@ export class Orphan {
 	gender: Gender;
 
 	@ApiProperty({ readOnly: true })
-	score: number;
+	@Expose()
+	get score(): number {
+		return (this.sociability + this.calm + this.beauty + this.hygiene + this.intelligence) / 5;
+	}
 
 	// Stats
 	@ApiProperty()
