@@ -26,6 +26,6 @@ async function bootstrap() {
 	const swaggerDoc = new SwaggerDocumentation(app);
 	swaggerDoc.serve();
 
-	await app.listen(config.server.port);
+	await app.listen(config.server.port, '0.0.0.0');
 }
 bootstrap();
