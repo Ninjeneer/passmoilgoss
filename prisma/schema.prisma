@@ -37,11 +37,11 @@ model Orphan {
   weight Int
   height Float
 
-  beauty       Int
-  intelligence Int
-  sociability  Int
-  calm         Int
-  hygiene      Int
+  beauty       Float
+  intelligence Float
+  sociability  Float
+  calm         Float
+  hygiene      Float
 
   @@map("orphans")
 }

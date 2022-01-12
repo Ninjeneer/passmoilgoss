@@ -188,6 +188,30 @@ describe('OrphanService', () => {
 				NotFoundException
 			);
 		});
+
+		it('Should upvote an orphan', async () => {
+			let orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const oldCalmScore = orphan.calm;
+			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
+			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
+
+			// Should cap to 20
+			orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 20 });
+			votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
+			expect(votedOrphan.calm).to.be.eq(20);
+		});
+
+		it('Should downvote an orphan', async () => {
+			let orphan = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const oldCalmScore = orphan.calm;
+			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
+			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
+
+			// Should cap to 0
+			orphan = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), calm: 0 });
+			votedOrphan = await orphanService.vote(orphan.id, 'calm', -1);
+			expect(votedOrphan.calm).to.be.eq(0);
+		});
 	});
 
 	describe('remove', () => {

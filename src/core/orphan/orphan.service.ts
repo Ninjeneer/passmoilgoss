@@ -42,8 +42,11 @@ export class OrphanService {
 		if (!orphan) {
 			throw new NotFoundException();
 		}
-		orphan[stat] += value * 0.15;
-		await this.update(id, { ...orphan, birthDate: orphan.birthDate.toISOString() });
+		const nextScore = orphan[stat] + value * 0.15;
+		if (nextScore >= 0 && nextScore <= 20) {
+			orphan[stat] += value * 0.15;
+			await this.update(id, { ...orphan, birthDate: orphan.birthDate.toISOString() });
+		}
 		return orphan;
 	}
 }
