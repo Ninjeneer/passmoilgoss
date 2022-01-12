@@ -44,18 +44,20 @@ export class OrphanController {
 	@ApiOperation({ summary: 'Retrieve all orphan' })
 	@ApiOkResponse({ description: 'Successfully retrieved orphan list', type: [Orphan] })
 	async findAll(
-		@Query('gender') gender: Gender,
+		@Query('gender') gender: string,
 		@Query('countries') countries: string,
 		@Query('eyes') eyes: string,
 		@Query('hairs') hairs: string,
+		@Query('firstname') firstname: string,
 		@Query('sort') sort: string
 	): Promise<Orphan[]> {
 		return await this.orphanService.findAll(
 			{
-				gender,
+				gender: gender ? (gender === 'male' ? Gender.M : Gender.F) : undefined,
 				countries: countries?.split('|'),
 				eyes: eyes?.split('|'),
-				hairs: hairs?.split('|')
+				hairs: hairs?.split('|'),
+				firstname
 			},
 			sort
 		);
