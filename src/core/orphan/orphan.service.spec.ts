@@ -155,6 +155,38 @@ describe('OrphanService', () => {
 			orphans = await orphanService.findAll(null, '-firstname');
 			expect(orphans.map((o) => o.id).indexOf(o1.id)).to.be.gt(orphans.map((o) => o.id).indexOf(o2.id));
 		});
+
+		it('Should calculate orphan score', async () => {
+			let orphan = await createOrphan(orphanService, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				beauty: 10,
+				hygiene: 10,
+				intelligence: 10,
+				calm: 10,
+				sociability: 10
+			});
+			expect(orphan.score).to.be.eq(10);
+
+			orphan = await createOrphan(orphanService, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				beauty: 20,
+				hygiene: 20,
+				intelligence: 10,
+				calm: 0,
+				sociability: 0
+			});
+			expect(orphan.score).to.be.eq(10);
+
+			orphan = await createOrphan(orphanService, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				beauty: 17,
+				hygiene: 19,
+				intelligence: 11,
+				calm: 8,
+				sociability: 13
+			});
+			expect(orphan.score).to.be.eq(13.6);
+		});
 	});
 
 	describe('create', () => {
