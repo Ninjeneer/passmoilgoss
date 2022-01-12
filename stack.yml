@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
     db:
-        container_name: nus_postgres
+        container_name: pmg_postgress
         image: postgres
         restart: always
         environment:
