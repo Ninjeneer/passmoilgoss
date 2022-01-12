@@ -1,13 +1,21 @@
 version: '3.1'
 
 services:
-    db:
-        container_name: pmg_postgress
-        image: postgres
-        restart: always
-        environment:
-            - POSTGRES_DB=passmoilgoss
-            - POSTGRES_USER=pmg
-            - POSTGRES_PASSWORD=pmg
-        ports:
-            - 5432:5432
+  db:
+    container_name: nus_postgres
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=passmoilgoss
+      - POSTGRES_USER=pmg
+      - POSTGRES_PASSWORD=pmg
+    ports:
+      - "5432:5432"
+  pmg-back:
+    container_name: pmg
+    image: manquiche/passmoilgoss-nest
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://pmg:pmg@db:5432/passmoilgoss?schema=public
+    ports:
+      - "8080:3000"
