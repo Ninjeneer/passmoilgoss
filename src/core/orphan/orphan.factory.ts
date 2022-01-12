@@ -8,13 +8,15 @@ export default class OrphanFactory {
 	public static async buildOne(): Promise<Orphan> {
 		const gender = [Gender.M, Gender.F][Math.round(Math.random())];
 		const imgRequest = await axios.get(
-			`https://fakeface.rest/face/json?gender=${gender === Gender.M ? 'male' : 'female'}&minimum_age=0&maximum_age=15`
+			`https://fakeface.rest/face/json?gender=${gender === Gender.M ? 'male' : 'female'}&minimum_age=2&maximum_age=15`
 		);
+		const birthDate = date.past(imgRequest.data.age);
+		birthDate.setFullYear(new Date().getFullYear() - imgRequest.data.age);
 
 		return {
 			firstname: name.firstName(gender === Gender.M ? 0 : 1),
 			lastname: name.lastName(),
-			birthDate: date.past(imgRequest.data.age),
+			birthDate,
 			height: datatype.number({ min: 90, max: 155 }),
 			weight: datatype.number({ min: 20, max: 60 }),
 			gender,
@@ -23,11 +25,11 @@ export default class OrphanFactory {
 			country: address.country(),
 			picture: imgRequest.data.image_url,
 
-			beauty: datatype.number({ min: 0, max: 20 }),
-			intelligence: datatype.number({ min: 0, max: 20 }),
-			sociability: datatype.number({ min: 0, max: 20 }),
-			calm: datatype.number({ min: 0, max: 20 }),
-			hygiene: datatype.number({ min: 0, max: 20 })
+			beauty: datatype.number({ min: 9, max: 20 }),
+			intelligence: datatype.number({ min: 9, max: 20 }),
+			sociability: datatype.number({ min: 9, max: 20 }),
+			calm: datatype.number({ min: 9, max: 20 }),
+			hygiene: datatype.number({ min: 9, max: 20 })
 		} as Orphan;
 	}
 

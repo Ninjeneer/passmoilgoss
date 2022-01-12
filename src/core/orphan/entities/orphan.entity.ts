@@ -36,6 +36,15 @@ export class Orphan {
 	}
 
 	@ApiProperty()
+	@Expose()
+	get age(): number {
+		const diff_ms = Date.now() - this.birthDate.getTime();
+		const age_dt = new Date(diff_ms);
+
+		return Math.abs(age_dt.getUTCFullYear() - 1970);
+	}
+
+	@ApiProperty()
 	picture: string;
 
 	// Stats
