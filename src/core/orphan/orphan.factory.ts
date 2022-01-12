@@ -12,9 +12,9 @@ export default class OrphanFactory {
 		);
 
 		return {
-			firstname: name.firstName(),
+			firstname: name.firstName(gender === Gender.M ? 0 : 1),
 			lastname: name.lastName(),
-			birthDate: date.past(8),
+			birthDate: date.past(imgRequest.data.age),
 			height: datatype.number({ min: 90, max: 155 }),
 			weight: datatype.number({ min: 20, max: 60 }),
 			gender,

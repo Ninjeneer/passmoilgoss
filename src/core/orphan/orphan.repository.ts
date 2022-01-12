@@ -77,7 +77,13 @@ export default class OrphanRepository {
 	}
 
 	public async findCountries(): Promise<string[]> {
-		return (await this.prisma.orphan.findMany({ select: { country: true } })).map((o) => o.country);
+		return (
+			await this.prisma.orphan.findMany({
+				select: { country: true },
+				orderBy: { country: 'asc' },
+				distinct: ['country']
+			})
+		).map((o) => o.country);
 	}
 
 	private removeUselessFilters(where): void {
