@@ -1,5 +1,4 @@
 import { Chain } from 'light-my-request';
-import { HttpStatus } from '@nestjs/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import User from 'src/core/user/entities/user.entity';
 
@@ -33,7 +32,6 @@ export default class HttpClient {
 
 	public setUser(user: User) {
 		this.user = user;
-		this.setToken(user.token.toString());
 	}
 
 	public getUser(): User {
@@ -70,17 +68,5 @@ export default class HttpClient {
 
 	public async delete(url: string, data?: Record<string, any>, params?: Record<string, any>): Promise<Chain> {
 		return this.send('DELETE', url, data, params);
-	}
-
-	public async logAs(username?: string, password?: string): Promise<Chain> {
-		const response = await this.post('/auth/login', { email: username, password: password });
-		if (response.statusCode === HttpStatus.OK) {
-			this.setUser(response.json<User>());
-		}
-		return response;
-	}
-
-	public async logAsUser(user: User) {
-		return this.logAs(user?.email, user?.password);
 	}
 }

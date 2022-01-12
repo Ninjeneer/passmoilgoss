@@ -2,7 +2,6 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import chai, { expect } from 'chai';
 
-import { AuthApiModule } from '../src/api/auth-api/auth-api.module';
 import { CreateOrphanDto } from '../src/core/orphan/dto/create-orphan.dto';
 import { Gender } from '../src/core/orphan/entities/orphan.entity';
 import HttpClient from './HttpClient';
@@ -34,7 +33,7 @@ describe('OrphanController (e2e)', function () {
 
 	this.beforeEach(async () => {
 		const moduleRef = await Test.createTestingModule({
-			imports: [OrphanApiModule, AuthApiModule]
+			imports: [OrphanApiModule]
 		}).compile();
 		app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
 		app.useGlobalPipes(new ValidationPipe());
@@ -46,7 +45,7 @@ describe('OrphanController (e2e)', function () {
 
 	describe('As basic orphan', () => {
 		it('Should be able to find all (GET /orphans/)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const response = await httpClient.get(`/orphans`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -54,7 +53,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to find all countries (GET /orphans/countries)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const response = await httpClient.get(`/orphans/countries`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -62,7 +61,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to filter orphans (GET /orphans/)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });
 			const orphan2 = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.F });
 			let response = await httpClient.get(`/orphans`, { gender: Gender.F });
@@ -92,7 +91,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to sort orphans (GET /orphans/)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, {
 				...OrphanFactory.buildCreateOrphanDto(),
 				gender: Gender.M,
@@ -114,7 +113,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to find one (GET /orphans/:id)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const response = await httpClient.get(`/orphans/${orphan.id}`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -124,7 +123,7 @@ describe('OrphanController (e2e)', function () {
 
 	describe('As admin orphan', () => {
 		it('Should be able to update orphan (PATCH /orphans/:id)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 			const newOrphanData = OrphanFactory.buildCreateOrphanDto();
 			const response = await httpClient.patch(`/orphans/${orphan.id}`, newOrphanData);
@@ -133,12 +132,12 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to create a orphan (POST /orphans)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
 		});
 
 		it('Should be able to delete a orphan (DELETE /orphans/:id)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			// Create a orphan
 			const orphan = OrphanFactory.buildOne();
 			let response = await httpClient.post('/orphans', { ...orphan });
@@ -155,7 +154,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to upvote orphan (PATCH /orphans/:id/:stat/upvote)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), calm: 10 });
 			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/upvote`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -163,7 +162,7 @@ describe('OrphanController (e2e)', function () {
 		});
 
 		it('Should be able to downvote orphan (PATCH /orphans/:id/:stat/upvote)', async () => {
-			const httpClient = await getHttpClient(null, app);
+			const httpClient = await getHttpClient(app);
 			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), calm: 10 });
 			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/downvote`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
@@ -172,7 +171,7 @@ describe('OrphanController (e2e)', function () {
 	});
 
 	this.afterEach(async () => {
-		const httpClient = await getHttpClient(null, app);
+		const httpClient = await getHttpClient(app);
 		for (const orphan of createdOrphans) {
 			await httpClient.delete(`/orphans/${orphan.id}`);
 		}

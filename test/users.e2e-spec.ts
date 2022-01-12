@@ -3,10 +3,8 @@ import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import TestUtils, { getHttpClient } from './utils';
 import chai, { expect } from 'chai';
 
-import { AuthApiModule } from '../src/api/auth-api/auth-api.module';
-import { AuthModule } from '../src/core/auth/auth.module';
 import { Test } from '@nestjs/testing';
-import { User } from '@prisma/client';
+import User from '../src/core/user/entities/user.entity';
 import { UserApiModule } from '../src/api/user-api/user-api.module';
 import UserFactory from '../src/core/user/user.factory';
 import { UserModule } from '../src/core/user/user.module';
@@ -26,7 +24,7 @@ describe('UserController (e2e)', function () {
 
 	this.beforeEach(async () => {
 		const moduleRef = await Test.createTestingModule({
-			imports: [UserApiModule, AuthModule, AuthApiModule, UserModule]
+			imports: [UserApiModule, UserModule]
 		}).compile();
 		app = moduleRef.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
 		app.useGlobalPipes(new ValidationPipe());
@@ -39,17 +37,26 @@ describe('UserController (e2e)', function () {
 
 	describe('As basic user', () => {
 		it('Should be able to find himself (GET /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
-			const response = await httpClient.get(`/users/${httpClient.user.id}`);
+			const httpClient = await getHttpClient(app);
+			let user = UserFactory.buildOne();
+			let response = await httpClient.post('/users', user);
+			user = response.json<User>();
+
+			response = await httpClient.get(`/users/${response.json<User>().id}`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
-			expect(response.json<User>()).to.containSubset(httpClient.getUser());
+			expect(response.json<User>()).to.containSubset(user);
+			createdUsers.push(user);
 		});
 
 		it('Should be able to update himself (UPDATE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.basic, app);
+			const httpClient = await getHttpClient(app);
+			let user = UserFactory.buildOne();
+			let response = await httpClient.post('/users', user);
+			user = response.json<User>();
+			createdUsers.push(user);
+
 			const newUserData = UserFactory.buildOne();
-			delete newUserData.password;
-			const response = await httpClient.patch(`/users/${httpClient.getUser().id}`, newUserData);
+			response = await httpClient.patch(`/users/${user.id}`, newUserData);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<User>().email).to.be.eq(newUserData.email);
 		});
@@ -57,7 +64,7 @@ describe('UserController (e2e)', function () {
 
 	describe('As admin user', () => {
 		it('Should be able to retrieve user list (/users)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			const response = await httpClient.get('/users');
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<User[]>()).to.be.instanceOf(Array);
@@ -65,7 +72,7 @@ describe('UserController (e2e)', function () {
 		});
 
 		it('Should be able to create a user (POST /users)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			const user = UserFactory.buildOne();
 			const response = await httpClient.post('/users', user);
 			expect(response.statusCode).to.be.eq(HttpStatus.CREATED);
@@ -74,7 +81,7 @@ describe('UserController (e2e)', function () {
 		});
 
 		it('Should not be able to create a user without email (POST /users)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			const user = UserFactory.buildOne();
 			delete user.email;
 			const response = await httpClient.post('/users', user);
@@ -82,26 +89,18 @@ describe('UserController (e2e)', function () {
 		});
 
 		it('Should not be able to create a user with existing email (POST /users)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			const user = UserFactory.buildOne();
 			let response = await httpClient.post('/users', user);
 			expect(response.statusCode).to.be.eq(HttpStatus.CREATED);
-			createdUsers.push({ password: user.password, ...response.json<User>() });
+			createdUsers.push(response.json<User>());
 
 			response = await httpClient.post('/users', { ...createdUsers[createdUsers.length - 1] });
 			expect(response.statusCode).to.be.eq(HttpStatus.CONFLICT);
 		});
 
-		it('Should not be able to create a user with short password (POST /users)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
-			const user = UserFactory.buildOne();
-			user.password = '123';
-			const response = await httpClient.post('/users', user);
-			expect(response.statusCode).to.be.eq(HttpStatus.BAD_REQUEST);
-		});
-
 		it('Should be able to update a user (PATCH /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			// Create a user
 			const user = UserFactory.buildOne();
 			let response = await httpClient.post('/users', { ...user });
@@ -115,23 +114,8 @@ describe('UserController (e2e)', function () {
 			expect(response.json<User>().email).to.be.eq(newUserData.email);
 		});
 
-		it('Should not be able to update a user with a short password (PATCH /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
-			// Create a user
-			const user = UserFactory.buildOne();
-			let response = await httpClient.post('/users', { ...user });
-			expect(response.statusCode).to.be.eq(HttpStatus.CREATED);
-			createdUsers.push(response.json<User>());
-
-			// Update it
-			const newUserData = UserFactory.buildOne();
-			newUserData.password = '123';
-			response = await httpClient.patch(`/users/${createdUsers[createdUsers.length - 1].id}`, newUserData);
-			expect(response.statusCode).to.be.eq(HttpStatus.BAD_REQUEST);
-		});
-
 		it('Should be able to delete a user (DELETE /users/:id)', async () => {
-			const httpClient = await getHttpClient(users.admin, app);
+			const httpClient = await getHttpClient(app);
 			// Create a user
 			const user = UserFactory.buildOne();
 			let response = await httpClient.post('/users', { ...user });
@@ -149,7 +133,7 @@ describe('UserController (e2e)', function () {
 	});
 
 	this.afterEach(async () => {
-		const httpClient = await getHttpClient(users.admin, app);
+		const httpClient = await getHttpClient(app);
 		for (const user of createdUsers) {
 			await httpClient.delete(`/users/${user.id}`);
 		}

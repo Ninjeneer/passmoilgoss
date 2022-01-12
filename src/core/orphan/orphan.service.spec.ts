@@ -10,7 +10,6 @@ import OrphanFactory from './orphan.factory';
 import OrphanRepository from './orphan.repository';
 import { OrphanService } from './orphan.service';
 import { PrismaService } from '../../prisma.service';
-import { SecurityModule } from '../security/security.module';
 import chaiAsPromised from 'chai-as-promised';
 import chaiSubset from 'chai-subset';
 
@@ -32,7 +31,6 @@ describe('OrphanService', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [SecurityModule],
 			providers: [OrphanService, PrismaService, OrphanRepository]
 		}).compile();
 

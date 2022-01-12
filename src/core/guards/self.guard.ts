@@ -12,7 +12,7 @@ import { UserRole } from '../user/entities/user.entity';
 export class SelfGuard implements CanActivate {
 	canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
 		const request: Request = context.switchToHttp().getRequest();
-		if (request.user.role === UserRole.ADMIN || request.user.id === request.params.id) {
+		if (request.user.role === UserRole.STAFF || request.user.id === request.params.id) {
 			return true;
 		}
 		throw new ForbiddenException();

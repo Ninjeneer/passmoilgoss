@@ -1,7 +1,5 @@
-import { IsEmail, IsIP, IsOptional, Length } from 'class-validator';
-
 import { ApiProperty } from '@nestjs/swagger';
-import config from '../../../assets/config.json';
+import { IsEmail } from 'class-validator';
 import { UserRole } from '../entities/user.entity';
 
 export default class CreateUserDTO {
@@ -10,14 +8,14 @@ export default class CreateUserDTO {
 	email: string;
 
 	@ApiProperty()
-	@IsOptional()
-	@Length(config.security.password.length)
-	password: string;
+	firstname: string;
+
+	@ApiProperty()
+	lastname: string;
 
 	@ApiProperty({ enum: UserRole })
 	role?: UserRole;
 
-	@IsIP()
-	@IsOptional()
-	ip?: string;
+	@ApiProperty()
+	approved: boolean;
 }

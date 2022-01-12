@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import chai, { expect } from 'chai';
 
 import { PrismaService } from '../../prisma.service';
-import { SecurityModule } from '../security/security.module';
 import User from './entities/user.entity';
 import UserFactory from './user.factory';
 import UserRepository from './user.repository';
@@ -20,12 +19,7 @@ const createdUsers: User[] = [];
 
 async function createUser(userService: UserService) {
 	const user = UserFactory.buildOne();
-	const createdUser = await userService.create({
-		email: user.email,
-		password: user.password
-	});
-	expect(createdUser.password).to.not.be.eq(user.password);
-	delete user.password;
+	const createdUser = await userService.create(user);
 	expect(createdUser).containSubset(user);
 	createdUsers.push(createdUser);
 	return createdUser;
@@ -37,7 +31,6 @@ describe('UserService', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [SecurityModule],
 			providers: [UserService, PrismaService, UserRepository]
 		}).compile();
 
@@ -72,29 +65,20 @@ describe('UserService', () => {
 			const user = UserFactory.buildOne();
 			delete user.email;
 
-			await expect(
-				userService.create({
-					email: user.email,
-					password: user.password
-				})
-			).to.be.rejectedWith(Error);
+			await expect(userService.create({ ...UserFactory.buildOne(), email: undefined })).to.be.rejectedWith(Error);
 		});
 
 		it('Should not create a user with an existing email', async () => {
 			const user = await createUser(userService);
-			await expect(
-				userService.create({
-					email: user.email,
-					password: user.password
-				})
-			).to.be.rejectedWith(EmailAlreadyUsedException);
+			await expect(userService.create({ ...UserFactory.buildOne(), email: user.email })).to.be.rejectedWith(
+				EmailAlreadyUsedException
+			);
 		});
 	});
 
 	describe('find', () => {
 		it('Should find the created user', async () => {
 			const user = await createUser(userService);
-			delete user.password;
 			expect(await userService.findOne(user.id)).containSubset(user);
 		});
 
@@ -108,12 +92,9 @@ describe('UserService', () => {
 			const user = await createUser(userService);
 			const newUserData = UserFactory.buildOne();
 			const updatedUser = await userService.update(user.id, {
-				email: newUserData.email,
-				password: newUserData.password
+				email: newUserData.email
 			});
-			delete updatedUser.password;
-			delete newUserData.password;
-			expect(updatedUser).containSubset(newUserData);
+			expect(updatedUser.email).to.be.eq(newUserData.email);
 		});
 
 		it('Should not update a user with an existing email', async () => {

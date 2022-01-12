@@ -1,11 +1,14 @@
-import { internet } from 'faker';
-import User from './entities/user.entity';
+import User, { UserRole } from './entities/user.entity';
+import { internet, name } from 'faker';
 
 export default class UserFactory {
 	public static buildOne(): User {
 		return {
 			email: internet.email().toLowerCase(),
-			password: internet.password()
+			firstname: name.firstName(),
+			lastname: name.lastName(),
+			role: UserRole.PARENT,
+			approved: false
 		} as User;
 	}
 

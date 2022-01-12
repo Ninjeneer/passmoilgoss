@@ -40,9 +40,8 @@ export class UserController {
 	@ApiOperation({ summary: 'Create a user' })
 	@ApiCreatedResponse({ description: 'User created successfully', type: User })
 	@ApiConflictResponse({ description: 'User e-mail already exists' })
-	async create(@Req() request: Request, @Body() createUserDto: CreateUserDTO) {
-		const user = await this.userService.create({ ip: request.ip, ...createUserDto });
-		delete user.password;
+	async create(@Body() createUserDto: CreateUserDTO) {
+		const user = await this.userService.create(createUserDto);
 		return user;
 	}
 
