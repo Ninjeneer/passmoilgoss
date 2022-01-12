@@ -65,7 +65,7 @@ describe('OrphanController (e2e)', function () {
 			const httpClient = await getHttpClient(null, app);
 			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });
 			const orphan2 = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.F });
-			let response = await httpClient.get(`/orphans`, { gender: 'f' });
+			let response = await httpClient.get(`/orphans`, { gender: Gender.F });
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
 			expect(response.json<Orphan[]>()).to.include.deep.members([orphan2]);
 			expect(response.json<Orphan[]>()).to.not.include.deep.members([orphan]);

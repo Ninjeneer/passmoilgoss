@@ -3,8 +3,8 @@ import { Expose } from 'class-transformer';
 import { Orphan as PrismaOrphan } from '@prisma/client';
 
 export enum Gender {
-	M = 'm',
-	F = 'f'
+	M = 'Garçon',
+	F = 'Fille'
 }
 
 export const HairColors = ['Blond', 'Brun', 'Châtain', 'Roux'];
