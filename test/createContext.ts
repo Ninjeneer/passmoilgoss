@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const n = 100;
+const n = 20;
 prisma.orphan
 	.createMany({
 		data: OrphanFactory.buildManyCreateOrphanDto(n)
