@@ -49,4 +49,8 @@ export class OrphanService {
 		}
 		return orphan;
 	}
+
+	async findAvailableCountries(): Promise<string[]> {
+		return await this.orphanRepository.findCountries();
+	}
 }

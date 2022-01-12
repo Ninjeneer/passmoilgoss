@@ -11,6 +11,7 @@ export interface FindManyFilters {
 	eyes?: string[];
 	hairs?: string[];
 	countries?: string[];
+	firstname?: string;
 }
 
 @Injectable()
@@ -33,13 +34,24 @@ export default class OrphanRepository {
 				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ gender: filters.gender });
 			}
 			if (filters.countries) {
-				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ country: { in: filters.countries } });
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({
+					country: { in: filters.countries, mode: 'insensitive' }
+				});
 			}
 			if (filters.eyes) {
-				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ eyes: { in: filters.eyes } });
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({
+					eyes: { in: filters.eyes, mode: 'insensitive' }
+				});
 			}
 			if (filters.hairs) {
-				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({ hairs: { in: filters.hairs } });
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({
+					hairs: { in: filters.hairs, mode: 'insensitive' }
+				});
+			}
+			if (filters.firstname) {
+				(request.where.AND as Array<Prisma.OrphanWhereInput>).push({
+					firstname: { startsWith: filters.firstname, mode: 'insensitive' }
+				});
 			}
 			this.removeUselessFilters(request.where);
 		}
@@ -62,6 +74,10 @@ export default class OrphanRepository {
 
 	public async remove(id: string): Promise<void> {
 		await this.prisma.orphan.delete({ where: { id } });
+	}
+
+	public async findCountries(): Promise<string[]> {
+		return (await this.prisma.orphan.findMany({ select: { country: true } })).map((o) => o.country);
 	}
 
 	private removeUselessFilters(where): void {

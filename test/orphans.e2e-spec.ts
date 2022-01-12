@@ -53,6 +53,14 @@ describe('OrphanController (e2e)', function () {
 			expect(response.json<Orphan[]>()).to.include.deep.members([orphan]);
 		});
 
+		it('Should be able to find all countries (GET /orphans/countries)', async () => {
+			const httpClient = await getHttpClient(null, app);
+			const orphan = await createOrphan(httpClient, OrphanFactory.buildCreateOrphanDto());
+			const response = await httpClient.get(`/orphans/countries`);
+			expect(response.statusCode).to.be.eq(HttpStatus.OK);
+			expect(response.json<string[]>()).to.include.members([orphan.country]);
+		});
+
 		it('Should be able to filter orphans (GET /orphans/)', async () => {
 			const httpClient = await getHttpClient(null, app);
 			const orphan = await createOrphan(httpClient, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });

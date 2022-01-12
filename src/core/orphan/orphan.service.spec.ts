@@ -60,6 +60,13 @@ describe('OrphanService', () => {
 			expect(orphans).to.include.deep.members([o1, o2]);
 		});
 
+		it('Should return an array of countries', async () => {
+			const o1 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const o2 = await createOrphan(orphanService, OrphanFactory.buildCreateOrphanDto());
+			const countries = await orphanService.findAvailableCountries();
+			expect(countries).to.include.members([o1.country, o2.country]);
+		});
+
 		it('Should filter orphans', async () => {
 			// Filter on gender
 			const o1 = await createOrphan(orphanService, { ...OrphanFactory.buildCreateOrphanDto(), gender: Gender.M });
@@ -130,6 +137,19 @@ describe('OrphanService', () => {
 			orphans = await orphanService.findAll({ hairs: ['Brun'] });
 			expect(orphans).to.include.deep.members([o8, o9]);
 			expect(orphans).to.not.include.deep.members([o10]);
+
+			// Filter on firstname
+			const o11 = await createOrphan(orphanService, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				firstname: 'aaaaaa'
+			});
+			const o12 = await createOrphan(orphanService, {
+				...OrphanFactory.buildCreateOrphanDto(),
+				firstname: 'bbbbbb'
+			});
+			orphans = await orphanService.findAll({ firstname: 'aaa' });
+			expect(orphans).to.include.deep.members([o11]);
+			expect(orphans).to.not.include.deep.members([o12]);
 
 			// Multi filter
 			orphans = await orphanService.findAll({ gender: Gender.M, eyes: ['Marron'] });

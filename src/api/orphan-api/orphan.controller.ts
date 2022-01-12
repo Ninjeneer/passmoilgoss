@@ -104,4 +104,10 @@ export class OrphanController {
 	async downvote(@Param('id') id: string, @Param('stat') stat: string): Promise<Orphan> {
 		return await this.orphanService.vote(id, stat, -1);
 	}
+	@Get('countries')
+	@ApiOperation({ summary: 'Get orphan countries' })
+	@ApiOkResponse({ description: 'Successfully retrieved countries', type: [String] })
+	async findCountries() {
+		return await this.orphanService.findAvailableCountries();
+	}
 }
