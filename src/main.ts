@@ -8,7 +8,9 @@ import config from './assets/config.json';
 import { fastifyHelmet } from 'fastify-helmet';
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { cors: true });
+	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
+		cors: { origin: '*' }
+	});
 	await app.register(fastifyHelmet);
 	app.useGlobalPipes(new ValidationPipe());
 
