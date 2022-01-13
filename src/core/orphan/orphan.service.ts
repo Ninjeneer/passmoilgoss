@@ -57,7 +57,7 @@ export class OrphanService {
 		if (!orphan) {
 			throw new NotFoundException();
 		}
-		const nextScore = orphan[stat] + value * 0.15;
+		const nextScore = orphan[stat] + value;
 		if (nextScore >= 0 && nextScore <= 20) {
 			orphan[stat] = nextScore;
 			await this.update(id, { ...orphan, birthDate: orphan.birthDate.toISOString() });

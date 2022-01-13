@@ -250,7 +250,7 @@ describe('OrphanService', function () {
 			let orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 15 });
 			const oldCalmScore = orphan.calm;
 			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
-			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
+			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 1);
 
 			// Should cap to 20
 			orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 20 });
@@ -261,8 +261,8 @@ describe('OrphanService', function () {
 		it('Should downvote an orphan', async () => {
 			let orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 15 });
 			const oldCalmScore = orphan.calm;
-			let votedOrphan = await orphanService.vote(orphan.id, 'calm', 1);
-			expect(votedOrphan.calm).to.be.eq(oldCalmScore + 0.15);
+			let votedOrphan = await orphanService.vote(orphan.id, 'calm', -1);
+			expect(votedOrphan.calm).to.be.eq(oldCalmScore - 1);
 
 			// Should cap to 0
 			orphan = await createOrphan(orphanService, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 0 });

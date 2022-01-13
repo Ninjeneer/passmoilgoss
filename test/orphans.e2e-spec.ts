@@ -164,7 +164,7 @@ describe('OrphanController (e2e)', function () {
 			const orphan = await createOrphan(httpClient, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 10 });
 			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/upvote`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
-			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm + 0.15);
+			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm + 1);
 		});
 
 		it('Should be able to downvote orphan (PATCH /orphans/:id/:stat/upvote)', async () => {
@@ -172,7 +172,7 @@ describe('OrphanController (e2e)', function () {
 			const orphan = await createOrphan(httpClient, { ...(await OrphanFactory.buildCreateOrphanDto()), calm: 10 });
 			const response = await httpClient.patch(`/orphans/${orphan.id}/calm/downvote`);
 			expect(response.statusCode).to.be.eq(HttpStatus.OK);
-			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm - 0.15);
+			expect(response.json<Orphan>().calm).to.be.eq(orphan.calm - 1);
 		});
 	});
 
