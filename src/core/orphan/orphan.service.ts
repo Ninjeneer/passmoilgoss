@@ -27,7 +27,7 @@ export class OrphanService {
 		if (oldSort?.includes('age')) {
 			orphans = orphans.sort((a, b) => (order === 1 ? a.age - b.age : b.age - a.age));
 		} else if (oldSort?.includes('score')) {
-			orphans = orphans.sort((a, b) => (order === 1 ? a.score - b.score : b.age - a.score));
+			orphans = orphans.sort((a, b) => (order === 1 ? a.score - b.score : b.score - a.score));
 		}
 		return orphans;
 	}
